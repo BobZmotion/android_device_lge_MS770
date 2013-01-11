@@ -1,0 +1,64 @@
+import /init.grand.rc
+import /init.lge.rc
+
+on init
+# Create filesystems if necessary.
+    exec /sbin/setup_fs \
+        /dev/block/platform/msm_sdcc.1/by-name/userdata \
+        /dev/block/platform/msm_sdcc.1/by-name/cache \
+        /dev/block/platform/msm_sdcc.1/by-name/drm \
+        /dev/block/platform/msm_sdcc.1/by-name/mpt \
+        /dev/block/platform/msm_sdcc.1/by-name/sns \
+        no_reboot
+	start bootlogo
+
+on boot-pause
+    exec system/bin/battery_charging
+
+
+on post-fs-data
+    setprop ro.crypto.keyfile.userdata /dev/block/platform/msm_sdcc.1/by-name/encrypt
+on boot
+    chmod 0660 /dev/ttyGS0
+    chown system system /dev/ttyGS0
+
+#brightness properties
+	setprop ro.lge.lcd_default_brightness    139
+
+# LGE_CHANGE_S, 20120426, kwangbin.yim@lge.com, Re-define TCP buffer size for MPCS LTE network. Overwrite init.rc property
+#   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
+    setprop net.tcp.buffersize.lte     4096,87380,1220608,4096,87380,1220608
+
+    write /proc/sys/net/core/rmem_max  1220608
+    write /proc/sys/net/core/wmem_max  1220608
+# LGE_CHANGE_E, 20120426, kwangbin.yim@lge.com, Re-define TCP buffer size for MPCS LTE network
+
+# changsoon2.park@lge.com : snd_cards check! if there is no sound card, make phone crash
+    write /sys/module/snd_soc_wcd9310/parameters/snd_check 1
+
+# LGE_CHANGE_S, 20110725, real-wifi@lge.com by Beaver, To enable ftm for WLAN
+# CONFIG_LGE_WLAN_PATCH
+
+#
+# CONFIG_LGE_WLAN_QCOM_PATCH
+service ftm_ptt /system/bin/ftm_ptt -d
+    user root
+    group radio system 
+    disabled
+
+on property:hw.ftm_ptt_start=1
+    start ftm_ptt
+
+on property:hw.ftm_ptt_start=0
+    stop ftm_ptt
+# LGE_CHANGE_E, 20110725, real-wifi@lge.com
+
+service bootlogo /sbin/bootlogo_l0
+	class main
+	user root
+	group root
+	disabled
+	oneshot
+
+on property:ro.build.type=user
+    write /sys/module/subsystem_restart/parameters/restart_level 3

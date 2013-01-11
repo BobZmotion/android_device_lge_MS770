@@ -1,0 +1,707 @@
+# Copyright (c) 2009-2011, Code Aurora Forum. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of Code Aurora nor
+#       the names of its contributors may be used to endorse or promote
+#       products derived from this software without specific prior written
+#       permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NON-INFRINGEMENT ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+on init
+    # Set permissions for persist partition
+    mkdir /persist 0771 system system
+
+on early-boot
+    # set RLIMIT_MEMLOCK to 64MB
+    setrlimit 8 67108864 67108864
+
+on boot
+#    exec system/bin/btnvtool -O	# LGE_CHANGE [blue.park@lge.com] <It is only used by eng mode>
+    chown bluetooth bluetooth /sys/module/bluetooth_power/parameters/power
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
+    chown bluetooth bluetooth /proc/bluetooth/sleep/proto
+    chown system system /sys/module/sco/parameters/disable_esco
+    chown bluetooth bluetooth /sys/module/hci_smd/parameters/hcismd_set
+    chmod 0660 /sys/module/bluetooth_power/parameters/power
+# LGE: LGBT_COMMON_LGTEST_DUTMODE, [20111116, sh.shin@lge.com] Enable BT DUT mode
+# LGBT_COMMON_BUGFIX_PERMISSION_MODIFY_FOR_CTS
+# LGE: LGBT_COMMON_LGTEST_DUTMODE, [20120320, sh.shin@lge.com] Change premission from 644 to 622
+# LGBT_COMMON_BUGFIX_PERMISSIONFORCTS_AND_DUTMODE, [20120326, younghun.nam@lge.com] Change premission from 622 to 660  
+    chmod 0660 /sys/module/hci_smd/parameters/hcismd_set  
+    chmod 0660 /sys/class/rfkill/rfkill0/state
+    chmod 0660 /proc/bluetooth/sleep/proto
+    chown bluetooth bluetooth /dev/ttyHS0
+    chmod 0660 /dev/ttyHS0
+    chown bluetooth bluetooth /sys/devices/platform/msm_serial_hs.0/clock
+    chmod 0660 /sys/devices/platform/msm_serial_hs.0/clock
+
+	#Create QMUX deamon socket area
+	mkdir /dev/socket/qmux_radio 0770 radio radio
+	chmod 2770 /dev/socket/qmux_radio
+	mkdir /dev/socket/qmux_audio 0770 media audio
+	chmod 2770 /dev/socket/qmux_audio
+	mkdir /dev/socket/qmux_bluetooth 0770 bluetooth bluetooth
+	chmod 2770 /dev/socket/qmux_bluetooth
+
+    setprop wifi.interface wlan0
+
+# LGE: LGBT_COMMON_BUGFIX_HEADSET_SUSPEND, [20120213, sh.shin@lge.com], Fix unstoppable rewind/fast-forward on video/music player
+# 20120422 update the property name to persist.bt.avrcp_keypressed
+	setprop persist.bt.avrcp_keypressed 0
+
+# LGBT_COMMON_BUGFIX_DUPLICATE_MEDIAPLAY, [20120422, sh.shin@lge.com]
+    setprop persist.bt.avrcp_pass_thru 1
+    
+    #Set SUID bit for usbhub
+    #chmod 4755 /system/bin/usbhub
+    #chmod 755 /system/bin/usbhub_init
+
+    #Remove SUID bit for iproute2 ip tool
+    chmod 0755 /system/bin/ip
+
+    #port-bridge
+    chmod 0660 /dev/smd0
+    chown system system /dev/smd0
+
+    #BT DUN port-bridge
+    chmod 0660 /dev/smd7
+    chown bluetooth bluetooth /dev/smd7
+
+    chmod 0444 /sys/devices/platform/msm_hsusb/gadget/usb_state
+
+    # create symlink for fb1 as HDMI
+    symlink /dev/graphics/fb1 /dev/graphics/hdmi
+
+    # Remove write permissions to video related nodes
+    chmod 0664 /sys/devices/virtual/graphics/fb1/hpd
+    chmod 0664 /sys/devices/virtual/graphics/fb1/video_mode
+    chmod 0664 /sys/devices/virtual/graphics/fb1/format_3d
+
+    # Change owner and group for media server and surface flinger
+    chown system system /sys/devices/virtual/graphics/fb1/format_3d
+
+    #For bridgemgr daemon to inform the USB driver of the correct transport
+    chown radio radio /sys/class/android_usb/f_rmnet_smd_sdio/transport
+
+# LGE_CHANGE_S, [2011-08-08], jugwan.eom@lge.com, change mode/owner of rtc device for SecureClock
+    chmod 660 /dev/rtc0
+    chown system system /dev/rtc0
+# LGE_CHANGE_E, [2011-08-08], jugwan.eom@lge.com, change mode/owner of rtc device for SecureClock
+
+# LGE_CHANGE_S, [2012-03-01], jongyeol.yang@lge.com, change permission and ownership in hdmid
+    chmod 0660 /sys/class/graphics/fb1/power_state
+    chown system graphics /sys/class/graphics/fb1/connected
+    chown system graphics /sys/class/graphics/fb1/edid_modes
+    chown system graphics /sys/class/graphics/fb1/power_state
+    chown system graphics /sys/class/graphics/fb1/hpd
+    chown system graphics /sys/class/graphics/fb1/hdcp_present
+    chown system graphics /sys/class/graphics/fb1/hdmi_mode
+# LGE_CHANGE_E, [2012-03-01], jongyeol.yang@lge.com, change owner of fb1 for HDMI
+
+    #To allow interfaces to get v6 address when tethering is enabled
+    write /proc/sys/net/ipv6/conf/rmnet0/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet1/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet2/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet3/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet4/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet5/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet6/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet7/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet_sdio0/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet_sdio1/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet_sdio2/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet_sdio3/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet_sdio4/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet_sdio5/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet_sdio6/accept_ra 2
+    write /proc/sys/net/ipv6/conf/rmnet_sdio7/accept_ra 2
+
+    # To prevent out of order acknowledgements from making
+    # connection tracking to treat them as not belonging to
+    # the connection they belong to.
+    # Otherwise, a weird issue happens in which some long
+    # connections on high-throughput links get dropped when
+    # an ack packet comes out of order
+    write /proc/sys/net/netfilter/nf_conntrack_tcp_be_liberal 1
+
+# import cne init file
+on post-fs
+    export_rc /persist/init.cne.rc
+# LGE_CHANGE_S [2012-05-14] Never remove it.
+	copy /proc/last_kmsg /data/dontpanic/last_kmsg
+# LGE_CHANGE_E
+
+# msm specific files that need to be created on /data
+on post-fs-data
+
+    mkdir /data/misc/bluetooth 0770 bluetooth bluetooth
+
+    # Create the directories used by the Wireless subsystem
+    mkdir /data/misc/wifi 0771 wifi wifi
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/misc/wifi/wpa_supplicant 0770 wifi wifi
+    mkdir /data/misc/dhcp 0770 dhcp dhcp
+#    chown dhcp dhcp /data/misc/dhcp
+# CONFIG_LGE_WLAN_PATCH
+# to observe dnsmasq.leases file for dhcp information of soft ap.
+    chown dhcp system /data/misc/dhcp
+
+    # Create directory used by audio subsystem
+    mkdir /data/misc/audio 0770 audio audio
+
+    # Mounting of persist is moved to 'on emmc-fs' and 'on fs' sections
+    # We chown/chmod /persist again so because mount is run as root + defaults
+    chown system system /persist
+    chmod 0771 /persist
+    chmod 0664 /sys/devices/platform/msm_sdcc.1/polling
+    chmod 0664 /sys/devices/platform/msm_sdcc.2/polling
+    chmod 0664 /sys/devices/platform/msm_sdcc.3/polling
+    chmod 0664 /sys/devices/platform/msm_sdcc.4/polling
+
+    # Chown polling nodes as needed from UI running on system server
+    chown system system /sys/devices/platform/msm_sdcc.1/polling
+    chown system system /sys/devices/platform/msm_sdcc.2/polling
+    chown system system /sys/devices/platform/msm_sdcc.3/polling
+    chown system system /sys/devices/platform/msm_sdcc.4/polling
+
+# LGE_CHANGE_S, 20111226, jin.park@lge.com, Mobile DM Router
+    chmod 0660 /dev/lge_dm_tty0
+    chown system system /dev/lge_dm_tty0
+# LGE_CHANGE_E, 20111226, jin.park@lge.com
+
+    #Create the symlink to qcn wpa_supplicant folder for ar6000 wpa_supplicant
+    mkdir /data/system 0775 system system
+    symlink /data/misc/wifi/wpa_supplicant /data/system/wpa_supplicant
+
+    #Create directories for wiper services
+    mkdir /data/wpstiles/ 0755 shell
+    mkdir /data/wiper 0755 gps qcom_oncrpc
+
+    #Create directories for gpsone_daemon services
+    mkdir /data/misc/gpsone_d 0770 system system
+
+    #Create directories for QuIPS
+    mkdir /data/misc/quipc 0770 gps system
+
+    #Create directories for Location services
+    mkdir /data/misc/location 0770 gps gps
+    mkdir /data/misc/location/mq 0770 gps gps
+
+    #Create directory from IMS services
+    mkdir /data/shared 0755
+    chown system system /data/shared
+
+    #Create directory for FOTA
+    mkdir /data/fota 0771
+    chown system system /data/fota
+
+    #Provide the access to hostapd.conf only to root and group
+    chmod 0660 /data/hostapd/hostapd.conf
+
+    # Create /data/time folder for time-services
+    mkdir /data/time/ 0700 system system
+
+	#LGE_CHANGE_S 20120130 HiddenMenu, seungin.choi@lge.com
+	mkdir /data/logger 0775 system system
+	exec /system/bin/smpl_count
+	#LGE_CHANGE_E 20120130 HiddenMenu, seungin.choi@lge.com
+
+#LGE_CHANGE_S 2012-04-27, HiddenMenu, seungin.choi@lge.com
+    chmod 0775 /data/logger/LogPropValue.sh
+    chown system system /data/logger/LogPropValue.sh
+#LGE_CHANGE_E 2012-04-27, HiddenMenu, seungin.choi@lge.com
+
+#LGE_CHANGE_S 2012-05-08, LogService, inmo.nam@lge.com
+	mkdir /data/log 0755 system system
+#LGE_CHANGE_E 2012-05-08, inmo.nam@lge.com
+
+    setprop vold.post_fs_data_done 1
+
+	#LGE_CHANGE_S 20120327 core, max frequency control neo.chae@lge.com
+	chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+	chown system system /sys/devices/system/cpu/cpu0/online
+	chown system system /sys/devices/system/cpu/cpu1/online
+	chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+	chmod 0664 /sys/devices/system/cpu/cpu0/online
+	chmod 0664 /sys/devices/system/cpu/cpu1/online
+#LGE_CHANGE_E 20120327 core, max frequency control neo.chae@lge.com
+
+
+# Export GPIO56 for fusion targets to enable/disable hub
+service usbhub_init /system/bin/usbhub_init
+   class late_start
+   user root
+   disabled
+   oneshot
+
+#on property:ro.board.platform=msm7630_fusion
+#    start usbhub_init
+
+on property:init.svc.wpa_supplicant=stopped
+    stop dhcpcd
+    
+on property:bluetooth.isEnabled=true
+    start btwlancoex
+    write /sys/class/bluetooth/hci0/idle_timeout 7000
+
+service cnd /system/bin/cnd
+    class late_start
+    socket cnd stream 666 root radio
+
+service rmt_storage /system/bin/rmt_storage
+    class core
+    user root
+    disabled
+
+on property:ro.emmc=1
+    start rmt_storage
+
+# LGE: LGBT_COMMON_FUNCTION_ADDR_LGFTM, [20110129, sh.shin@lge.com], read MAC address from LGFTM 
+service hciattach /system/bin/sh /system/etc/init.qcom.bt.sh
+    class late_start
+    user bluetooth
+    group qcom_oncrpc bluetooth net_bt_admin system
+    disabled
+    oneshot
+
+# +s LGBT_COMMON_FUNCTION_DUN_DISABLE
+#service bt-dun /system/bin/dun-server /dev/smd7 /dev/rfcomm0
+#    class late_start
+#    disabled
+#    oneshot
+
+#service dund /system/bin/sdptool add --channel=1 DUN
+#    class late_start
+#    user bluetooth
+#    group bluetooth net_bt_admin
+#    disabled
+#   oneshot
+# +e LGBT_COMMON_FUNCTION_DUN_DISABLE
+
+# +s LGBT_COMMON_FUNCTION_SAP_DISABLE
+#service bt-sap /system/bin/sapd 15
+#    class late_start
+#    disabled
+#    oneshot
+
+#service sapd /system/bin/sdptool add --channel=15 SAP
+#    class late_start
+#    user bluetooth
+#    group bluetooth net_bt_admin
+#    disabled
+#    oneshot
+# +e LGBT_COMMON_FUNCTION_SAP_DISABLE
+
+
+service bridgemgrd /system/bin/bridgemgrd
+    class late_start
+    user radio
+    group radio
+    disabled
+
+service port-bridge /system/bin/port-bridge /dev/smd0 /dev/ttyGS0
+    class late_start
+    user system
+    group system inet
+    disabled
+
+on property:ro.baseband="msm"
+    # Enable BT-DUN only for all msms
+# +s LGBT_COMMON_FUNCTION_DUN_DISABLE
+    setprop ro.qualcomm.bluetooth.dun false
+# +e LGBT_COMMON_FUNCTION_DUN_DISABLE
+
+service qmiproxy /system/bin/qmiproxy
+    class late_start
+    user radio
+    group radio
+    disabled
+
+# QMUX must be in multiple groups to support external process connections
+service qmuxd /system/bin/qmuxd
+    class late_start
+    user radio
+    group radio audio bluetooth
+    disabled
+
+service netmgrd /system/bin/netmgrd
+    class late_start
+    disabled
+
+service sensors /system/bin/sensors.qcom
+    class late_start
+    user root
+    group root
+    disabled
+
+on property:ro.use_data_netmgrd=false
+    # netmgr not supported on specific target
+    stop netmgrd
+
+# Adjust socket buffer to enlarge TCP receive window for high bandwidth
+# but only if ro.data.large_tcp_window_size property is set.
+on property:ro.data.large_tcp_window_size=true
+    write /proc/sys/net/ipv4/tcp_adv_win_scale  1
+
+service btwlancoex /system/bin/sh /system/etc/init.qcom.coex.sh
+    class late_start
+    user bluetooth
+    group bluetooth net_bt_admin inet net_admin net_raw
+    disabled
+    oneshot
+
+service wpa_supplicant /system/bin/logwrapper /system/bin/wpa_supplicant -Dnl80211
+    class late_start
+#    user root
+    group wifi inet
+    disabled
+    oneshot
+#LGE_CHANGE_S, 2012-02-07, enabling AUTO IP and not enabling ARP option 
+#service dhcpcd_wlan0 /system/bin/dhcpcd -BKLG
+service dhcpcd_wlan0 /system/bin/dhcpcd -ABKG 
+    class late_start
+    disabled
+    oneshot
+
+service dhcpcd_p2p /system/bin/dhcpcd -BKLG
+    class late_start
+    disabled
+    oneshot
+
+service iprenew_wlan0 /system/bin/dhcpcd -n
+    class late_start
+    disabled
+    oneshot
+
+service iprenew_p2p /system/bin/dhcpcd -n p2p
+    class late_start
+    disabled
+    oneshot
+
+service dhcpcd_bnep0 /system/bin/dhcpcd -BKLG
+    disabled
+    oneshot
+
+service wiperiface /system/bin/wiperiface
+	class late_start
+	user gps
+	group gps qcom_oncrpc
+    oneshot
+
+service gpsone_daemon /system/bin/gpsone_daemon
+    class late_start
+    user system
+    group system qcom_oncrpc inet
+    disabled
+
+service quipc_igsn /system/bin/quipc_igsn
+    class late_start
+    user gps
+    group inet gps
+    disabled
+
+service quipc_main /system/bin/quipc_main
+    class late_start
+    user gps
+    group net_admin wifi inet gps
+    disabled
+
+service fm_dl /system/bin/sh /system/etc/init.qcom.fm.sh
+    class late_start
+    user root
+    group system qcom_oncrpc
+    disabled
+    oneshot
+
+on property:crypto.driver.load=1
+     insmod /system/lib/modules/qce.ko
+     insmod /system/lib/modules/qcedev.ko
+
+on property:crypto.driver.load=0
+     exec /system/bin/rmmod qcedev.ko
+     exec /system/bin/rmmod qce.ko
+
+service drmdiag /system/bin/drmdiagapp
+    class late_start
+     user root
+     disabled
+     oneshot
+
+on property:drmdiag.load=1
+    start drmdiag
+
+on property:drmdiag.load=0
+    stop drmdiag
+
+service qcom-sh /system/bin/sh /init.qcom.sh
+    class late_start
+    user root
+    oneshot
+
+service qcom-post-boot /system/bin/sh /system/etc/init.qcom.post_boot.sh
+    class late_start
+    user root
+    disabled
+    oneshot
+
+service qcom-wifi /system/bin/sh /system/etc/init.qcom.wifi.sh
+    class late_start
+    oneshot
+
+on property:sys.boot_completed=1
+    start qcom-post-boot
+
+service atfwd /system/bin/ATFWD-daemon
+    class late_start
+    user system
+    group system radio
+    onrestart /system/bin/log -t RIL-ATFWD -p w "ATFWD daemon restarted"
+
+service hdmid /system/bin/hdmid
+    class late_start
+# LGE_CHANGE_S, [2012-03-01], jongyeol.yang@lge.com, change hdmid permission to "system"
+#   socket hdmid stream 0660 root system graphics
+    user system
+    group system graphics
+    socket hdmid stream 0660 system system
+# LGE_CHANGE_E, [2012-03-01], jongyeol.yang@lge.com, change hdmid permission to "system"
+    disabled
+
+service ppd /system/bin/mm-pp-daemon
+    class late_start
+    user system
+    socket pps stream 0660 system system graphics
+    group system graphics
+
+service hostapd /system/bin/hostapd -dddd /data/hostapd/hostapd.conf
+    class late_start
+    user root
+    group root
+    oneshot
+    disabled
+
+service ds_fmc_appd /system/bin/ds_fmc_appd -p "rmnet0" -D
+    class late_start
+    group radio wifi inet
+    disabled
+    oneshot
+
+on property:persist.data.ds_fmc_app.mode=1
+    start ds_fmc_appd
+
+service ims_regmanager /system/bin/exe-ims-regmanagerprocessnative
+    class late_start
+    user system
+    group qcom_oncrpc net_bt_admin inet radio wifi
+    disabled
+
+on property:persist.ims.regmanager.mode=1
+    start ims_regmanager
+
+on property:ro.data.large_tcp_window_size=true
+    # Adjust socket buffer to enlarge TCP receive window for high bandwidth (e.g. DO-RevB)
+    write /proc/sys/net/ipv4/tcp_adv_win_scale  1
+
+service time_daemon /system/bin/time_daemon
+    class late_start
+    user root
+    group root
+    oneshot
+    disabled
+
+on property:persist.timed.enable=true
+    start time_daemon
+
+service ril-daemon1 /system/bin/rild -c 1
+    class late_start
+    socket rild1 stream 660 root radio
+    socket rild-debug1 stream 660 radio system
+    user root
+    disabled
+    group radio cache inet misc audio sdcard_rw qcom_oncrpc diag
+
+service profiler_daemon /system/bin/profiler_daemon
+    class late_start
+    user root
+    group root
+    disabled
+
+# LGE_CHANGE_S, 20111226, jin.park@lge.com, Mobile DM Router
+service lg_dm_router /system/bin/lg_dm_router
+    class late_start
+    user system
+    group system
+    socket Full.DM.port stream 660 system system
+# LGE_CHANGE_E, 20111226, jin.park@lge.com
+
+# LGE_UPDATE_S
+# Do not activate below. Below already exists in init.target.rc.
+# 2012-01-08, warkap.seo@lge.com
+#service sdcard /system/bin/sdcard /data/media 1023 1023
+#    class late_start
+#    disabled
+#
+#on property:persist.fuse_sdcard=true
+#    start sdcard
+# LGE_UPDATE_E
+
+service hcidump /system/bin/sh /system/etc/hcidump.sh
+    user bluetooth
+    group bluetooth system net_bt_admin net_admin
+    disabled
+    oneshot
+
+# LGE_S: LGBT_COMMON_LGTEST_DUTMODE, [sh.shin@lge.com 20111116] Enable BT DUT mode
+service hciattach_dut /system/bin/sh /system/etc/init.lge_dut.bt.sh
+    user bluetooth
+    group qcom_oncrpc bluetooth net_bt_admin
+    disabled
+    oneshot
+
+
+# LGE_CHANGE_S, 20110725, real-wifi@lge.com by Beaver, To enable ftm for WLAN
+# CONFIG_LGE_WLAN_PATCH
+
+#
+# CONFIG_LGE_WLAN_QCOM_PATCH
+service ftm_ptt /system/bin/ftm_ptt -d
+    class late_start
+    user root
+    group radio system
+    disabled
+    oneshot
+
+on property:hw.ftm_ptt_start=1
+    start ftm_ptt
+
+on property:hw.ftm_ptt_start=0
+    stop ftm_ptt
+
+service wlan-on-off /system/bin/sh /system/etc/init.wlan-on-off.sh
+    class late_start
+    user root
+    disabled
+    oneshot
+
+# Workaround to resolve WCNSS power problem in Kernel Mode booting
+on property:init.svc.qcom-wifi=stopped
+    start wlan-on-off
+# LGE_CHANGE_E, 20110725, real-wifi@lge.com
+
+
+
+# for LinkBackup
+# ------------------------------------
+service spritebud /system/xbin/spritebud
+    socket spritebud stream 660 root radio
+    class main
+    user root
+    group root
+# ------------------------------------
+# LGE_CHANGE_S, 20120108, HiddenMenu Log_service seungin.choi@lge.com
+service logcat-main /system/bin/logcat -v time -b main -f /data/logger/main.log -n 4 -r 8192
+	class late_start
+	disabled
+	oneshot
+
+on property:persist.service.main.enable=1
+	start logcat-main
+
+on property:persist.service.main.enable=0
+	stop logcat-main
+
+service logcat-system /system/bin/logcat -v time -b system -f /data/logger/system.log -n 4 -r 8192
+	class late_start
+	disabled
+	oneshot
+
+on property:persist.service.system.enable=1
+	start logcat-system
+
+# [START_LGE_HiddenMenu] , ADD, sungkyoung.kim ,2012-03-23 , change command from "start" to "stop"
+on property:persist.service.system.enable=0
+	stop logcat-system
+#	start logcat-system
+# [END_LGE_HiddenMenu] , ADD, sungkyoung.kim ,2012-03-23 , change command from "start" to "stop"
+
+service logcat-radio /system/bin/logcat -v time -b radio -f /data/logger/radio.log -n 4 -r 8192
+	class late_start
+	disabled
+	oneshot
+
+on property:persist.service.radio.enable=1
+	start logcat-radio
+
+on property:persist.service.radio.enable=0
+	stop logcat-radio
+
+service logcat-events /system/bin/logcat -v time -b events -f /data/logger/events.log -n 4 -r 8192
+	class late_start
+	disabled
+	oneshot
+
+on property:persist.service.events.enable=1
+	start logcat-events
+
+on property:persist.service.events.enable=0
+	stop logcat-events
+
+service logcat-kernel /system/bin/sh /system/etc/save_kernel_log.sh
+    class late_start
+	disabled
+	oneshot
+
+on property:persist.service.kernel.enable=1
+	start logcat-kernel
+
+on property:persist.service.kernel.enable=0
+	stop logcat-kernel
+
+# LGE_CHANGE_S, [LGE_DATA][TCP_DUMP], gilchan.park@lge.com, 2012-02-16
+service logging_packet /system/xbin/tcpdump -i any -C 4 -W 10 -s 0 -w /data/logger/packet.pcap
+	class late_start
+	disabled
+	oneshot
+
+on property:persist.service.logging_packet=1
+	start logging_packet
+
+on property:persist.service.logging_packet=0
+	stop logging_packet
+# LGE_CHANGE_E, [LGE_DATA][TCP_DUMP], gilchan.park@lge.com, 2012-02-16
+
+#LGE_CHANGE_S seungin.choi@lge.com, HiddenMenu, Loading LogService Properties
+service cur_prop_val /system/bin/sh /data/logger/LogPropValue.sh
+	class late_start
+	user system
+	oneshot
+#LGE_CHANGE_E, seungin.choi@lge.com, HiddenMenu, Loading LogService Properties
+
+#LGE_CHANGE_S 20120327 core, max frequency control neo.chae@lge.com
+on property:sys.lge.core.manual=1
+	stop mpdecision
+	write /sys/devices/system/cpu/cpu1/online  0
+on property:sys.lge.core.manual=0
+	start mpdecision
+#LGE_CHANGE_E 20120327 core, max frequency control neo.chae@lge.com
+
+

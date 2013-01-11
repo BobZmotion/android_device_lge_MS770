@@ -1,0 +1,43 @@
+on fota-update
+    export PATH /sbin
+    export ANDROID_ROOT /system
+    export ANDROID_DATA /data
+    export EXTERNAL_STORAGE /sdcard
+    export PATH /sbin:/data/data/com.lge.omadmclient/files/
+
+    symlink /system/etc /etc
+
+    mkdir /sdcard
+    mkdir /system
+    mkdir /data
+    mkdir /cache
+    mount /tmp /tmp tmpfs
+
+    #mount rootfs rootfs / rw remount
+
+
+# mount mmc partitions
+
+	#[LGE_UPDATE_S] DMS_SYSTEM dms-fota@lge.com 2012/03/13
+    # Changed partition table 13 - > 14, 14 -> 15, 16 -> 17 2012/03/13
+	
+	wait /dev/block/mmcblk0p14
+	mount ext4 /dev/block/mmcblk0p14 /system rw data=journal barrier=1	
+
+	wait /dev/block/mmcblk0p15
+	exec /system/bin/e2fsck -y /dev/block/mmcblk0p15
+	mount ext4 /dev/block/mmcblk0p15 /data nosuid nodev noatime barrier=1 data=journal noauto_da_alloc errors=panic
+
+	wait /dev/block/mmcblk0p17
+	exec /system/bin/e2fsck -y /dev/block/mmcblk0p17
+	mount ext4 /dev/block/mmcblk0p17 /cache nosuid nodev data=journal barrier=1	
+
+#[LGE_UPDATE_E] DMS_SYSTEM dms-fota@lge.com 2012/03/13
+    
+	wait /dev/graphics/fb0
+	wait /dev/tty0
+	
+    chown system system /data
+    chmod 0771 /data
+
+	mkdir /cache/fota
