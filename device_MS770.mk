@@ -163,10 +163,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # We have enough space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
 
-# Device uses high-density artwork where available
-PRODUCT_AAPT_CONFIG := normal hdpi xhdpi
-PRODUCT_AAPT_PREF_CONFIG := xhdpi
-PRODUCT_LOCALES += xhdpi
+# Density
+PRODUCT_AAPT_CONFIG := normal mdpi
+PRODUCT_AAPT_PREF_CONFIG := mdpi
 
-# call dalvik heap config
-$(call inherit-product, frameworks/native/build/phone-xhdpi-1024-dalvik-heap.mk)
