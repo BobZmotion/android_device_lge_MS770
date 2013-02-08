@@ -143,7 +143,7 @@ PRODUCT_COPY_FILES += \
     device/lge/MS770/modules/reset_modem.ko:/system/lib/modules/reset_modem.ko \
     device/lge/MS770/modules/scsi_wait_scan.ko:/system/lib/modules/scsi_wait_scan.ko \
     device/lge/MS770/modules/spidev.ko:/system/lib/modules/spidev.ko \
-    device/lge/MS770/modules/wlan.ko:/system/lib/modules/prima/wlan.ko
+    device/lge/MS770/modules/wlan.ko:/system/lib/modules/wlan.ko
 
 # 2nd-init ramdisk
 PRODUCT_COPY_FILES += \
