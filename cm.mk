@@ -1,5 +1,5 @@
 # Specify phone tech before including full_phone
-$(call inherit-product, vendor/cm/config/cdma.mk)
+# $(call inherit-product, vendor/cm/config/cdma.mk)
 $(call inherit-product, vendor/cm/config/nfc_enhanced.mk)
 
 # Release name
@@ -22,6 +22,6 @@ PRODUCT_MANUFACTURER := lge
 
 # Set build fingerprint / ID / Product Name ect.
 PRODUCT_BUILD_PROP_OVERRIDES += \
-    PRODUCT_NAME=lge_VM670 \
+    PRODUCT_NAME=lge_VM770 \
     BUILD_FINGERPRINT="l0_MPCS_US-user 4.0.4 IMM76I MS77010d.1350037183 release-keys" \
     PRIVATE_BUILD_DESC="lge/l0_MPCS_US/l0:4.0.4/IMM76I/MS77010d.1350037183:user/release-keys"
