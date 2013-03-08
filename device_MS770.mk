@@ -28,6 +28,11 @@ DEVICE_PACKAGE_OVERLAYS += device/lge/MS770/overlay
 
 # Boot ramdisk setup
 PRODUCT_COPY_FILES += \
+    device/lge/MS770/ramdisk/bootlogo_res_images-timestamp:root/bootlogo_res_images-timestamp \
+    device/lge/MS770/ramdisk/chargerlogo_res_images-timestamp:root/chargerlogo_res_images-timestamp \
+    device/lge/MS770/ramdisk/default.prop:root/default.prop \
+    device/lge/MS770/ramdisk/init:root/init \
+    device/lge/MS770/ramdisk/init.goldfish.rc:root/init.goldfish.rc \
     device/lge/MS770/ramdisk/init.grand.rc:root/init.grand.rc \
     device/lge/MS770/ramdisk/init.l0.rc:root/init.l0.rc \
     device/lge/MS770/ramdisk/init.lge.early.rc:root/init.lge.early.rc \
@@ -37,12 +42,61 @@ PRODUCT_COPY_FILES += \
     device/lge/MS770/ramdisk/init.qcom.usb.rc:root/init.qcom.usb.rc \
     device/lge/MS770/ramdisk/init.rc:root/init.rc \
     device/lge/MS770/ramdisk/init.target.rc:root/init.target.rc \
+    device/lge/MS770/ramdisk/initlogo.rle:root/initlogo.rle \
     device/lge/MS770/ramdisk/lgdms.fota.rc:root/lgdms.fota.rc \
     device/lge/MS770/ramdisk/lgdms.fota_update.rc:root/lgdms.fota_update.rc \
     device/lge/MS770/ramdisk/ueventd.goldfish.rc:root/ueventd.goldfish.rc \
     device/lge/MS770/ramdisk/ueventd.grand.rc:root/ueventd.grand.rc \
     device/lge/MS770/ramdisk/ueventd.l0.rc:root/ueventd.l0.rc \
-    device/lge/MS770/ramdisk/ueventd.rc:root/ueventd.rc
+    device/lge/MS770/ramdisk/ueventd.rc:root/ueventd.rc \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00000.rle:root/bootimages/boot_logo_00000.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00001.rle:root/bootimages/boot_logo_00001.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00002.rle:root/bootimages/boot_logo_00002.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00003.rle:root/bootimages/boot_logo_00003.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00004.rle:root/bootimages/boot_logo_00004.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00005.rle:root/bootimages/boot_logo_00005.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00006.rle:root/bootimages/boot_logo_00006.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00007.rle:root/bootimages/boot_logo_00007.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00008.rle:root/bootimages/boot_logo_00008.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00009.rle:root/bootimages/boot_logo_00009.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00010.rle:root/bootimages/boot_logo_00010.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00011.rle:root/bootimages/boot_logo_00011.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00012.rle:root/bootimages/boot_logo_00012.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00013.rle:root/bootimages/boot_logo_00013.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00014.rle:root/bootimages/boot_logo_00014.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00015.rle:root/bootimages/boot_logo_00015.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00016.rle:root/bootimages/boot_logo_00016.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00017.rle:root/bootimages/boot_logo_00017.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00018.rle:root/bootimages/boot_logo_00018.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00019.rle:root/bootimages/boot_logo_00019.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00020.rle:root/bootimages/boot_logo_00020.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00021.rle:root/bootimages/boot_logo_00021.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00022.rle:root/bootimages/boot_logo_00022.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00023.rle:root/bootimages/boot_logo_00023.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00024.rle:root/bootimages/boot_logo_00024.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00025.rle:root/bootimages/boot_logo_00025.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00026.rle:root/bootimages/boot_logo_00026.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00027.rle:root/bootimages/boot_logo_00027.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00028.rle:root/bootimages/boot_logo_00028.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00029.rle:root/bootimages/boot_logo_00029.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00030.rle:root/bootimages/boot_logo_00030.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00031.rle:root/bootimages/boot_logo_00031.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00032.rle:root/bootimages/boot_logo_00032.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00033.rle:root/bootimages/boot_logo_00033.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00034.rle:root/bootimages/boot_logo_00034.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00035.rle:root/bootimages/boot_logo_00035.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00036.rle:root/bootimages/boot_logo_00036.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00037.rle:root/bootimages/boot_logo_00037.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00038.rle:root/bootimages/boot_logo_00038.rle \
+    device/lge/MS770/ramdisk/bootimages/boot_logo_00039.rle:root/bootimages/boot_logo_00039.rle \
+    device/lge/MS770/ramdisk/res/images/errorlogo.png:root/res/images/errorlogo.png \
+    device/lge/MS770/ramdisk/sbin/adbd:root/sbin/adbd \
+    device/lge/MS770/ramdisk/sbin/bootlogo_l0:root/sbin/bootlogo_l0 \
+    device/lge/MS770/ramdisk/sbin/chargerlogo:root/sbin/chargerlogo \
+    device/lge/MS770/ramdisk/sbin/lge_fota:root/sbin/lge_fota \
+    device/lge/MS770/ramdisk/sbin/make_ext4fs:root/sbin/make_ext4fs \
+    device/lge/MS770/ramdisk/sbin/setup_fs:root/sbin/setup_fs \
+    device/lge/MS770/ramdisk/sbin/wallpaper:root/sbin/wallpaper
 
 # GPS config
 PRODUCT_COPY_FILES += device/lge/MS770/prebuilt/gps.conf:system/etc/gps.conf

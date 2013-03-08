@@ -38,12 +38,12 @@ service qcamerasvr /system/bin/mm-qcamera-daemon
         class late_start
         user system
         group system camera inet
-
+# LGE_CHANGE to disable ISAGNav, if necessary copy these to \android\device\lge\each_model\init.each_model.rc
 #start GNSS/Sensor interface daemon
-service gsiff_daemon /system/bin/gsiff_daemon
-    class late_start
-    user system
-    group qcom_oncrpc
+#service gsiff_daemon /system/bin/gsiff_daemon
+#    class late_start
+#    user system
+#    group qcom_oncrpc
 
 # LGE_CHANGE For MTP
 on init
@@ -252,6 +252,14 @@ on chargerlogo_adbd
 
 on chargerlogo
    stop bootlogo
+   write /sys/module/rpm_resources/enable_low_power/L2_cache 1
+   write /sys/module/rpm_resources/enable_low_power/pxo 1
+   write /sys/module/rpm_resources/enable_low_power/vdd_dig 1
+   write /sys/module/rpm_resources/enable_low_power/vdd_mem 1
+   write /sys/module/pm_8x60/modes/cpu0/power_collapse/suspend_enabled 1
+   write /sys/module/pm_8x60/modes/cpu1/power_collapse/suspend_enabled 1
+   write /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled 1
+   write /sys/module/pm_8x60/modes/cpu1/power_collapse/idle_enabled 1
    exec /sbin/chargerlogo
 
 
